@@ -2,7 +2,6 @@
 # by Changjie Ma and Yijun Lou
 # Feb. 2019
 
-setwd("~/Documents/projects/r_project/FIN567")
 library(quantmod)
 library(PerformanceAnalytics)
 library(xts)
@@ -27,7 +26,7 @@ returns.portfolio <- rowMeans(returns)
 returns.portfolio <- xts(returns.portfolio,order.by = index(returns))
 colnames(returns.portfolio) <- 'returns'
 
-# Question 1
+# Calculate the ES using historical simulation
 
 VaR.q1 <- c()
 ES.q1 <- c()
@@ -51,7 +50,7 @@ ggplot( results.q1*4, aes(index(results.q1)) ) +
   xlab('Time')+
   ylab('value (million USD)')
 
-# Question 2
+# Compute implied volatilities through Black-Scholes model
 # p <- c(100*(18.70+19.70)/2,100*(20.00+21.10)/2,100*(1.80+1.96)/2,100*(2.14+2.37)/2) # observed option price
 p <- c((18.70+19.70)/2,(20.00+21.10)/2,(1.80+1.96)/2,(2.14+2.37)/2) # observed option price
 S <- c(2564.98,2564.98,23273.96/100,23273.96/100) # current prices
@@ -69,7 +68,7 @@ vol.4 <- GBSVolatility(p[4],'p',S[4],X[4],T,r,(r-q[4]))
 
 implied.volatilities <- c(vol.1,vol.2,vol.3,vol.4)
 
-# Question 3
+# Simulate and compute VaR and ES
 BlackScholesCall <- function(S0,K,T,r,d,sigma){
   t <- 0
   d1 <- (log(S0/K)+(r-d+sigma^2/2)*(T-t))/(sigma*sqrt(T-t))
@@ -129,10 +128,9 @@ ggplot(return.combined,aes(index(return.combined)))+
 return.combined.sorted <- sort(return.combined[,1],decreasing=FALSE)
 VaR.port.sim <- return.combined.sorted[n*0.05]
 
-# Question 4
 ES.port.sim <- mean(return.combined.sorted[1:n*0.05])
 
-# Answers
+# Output
 cat('\n\nQ.2',
     '\nFair value of the four options are:',round(p,2),
     '\nImplied volatility of the four options are:',round(implied.volatilities,4),
